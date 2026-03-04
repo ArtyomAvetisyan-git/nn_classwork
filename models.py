@@ -18,7 +18,14 @@ class Perceptron:
   def loss(self, prediction, target):
     return np.mean((prediction-target)**2)
   
-  def fit(self, X, y, tolerance=10e-5, n_epochs=100, batch_size=10):
+  def sgd(self, X, y, tolerance=10e-5, n_epochs=100):
+     return  self._fit(X, y, tolerance, n_epochs, 1)
+  def mbgd(self, X, y, tolerance=10e-5, n_epochs=100, batch_size=10):
+    return self._fit(X, y, tolerance, n_epochs, batch_size)
+  def bgd(self, X, y, tolerance=10e-5, n_epochs=100):
+    return self._fit(X, y, tolerance, n_epochs, len(X))
+  
+  def _fit(self, X, y, tolerance=10e-5, n_epochs=100, batch_size=10):
     history = {'k': [], 'b': [], 'mse': []}
     n_samples = len(X)
 
@@ -51,6 +58,8 @@ class Perceptron:
             history['b'].append(self.weights[0])
 
     return history 
+  
+  
 
 if __name__=="__main__":
 
@@ -63,7 +72,7 @@ if __name__=="__main__":
     y_synt = y + error
 
     nn = Perceptron(1)
-    h = nn.fit(X.reshape(-1, 1), y_synt)
+    h = nn.sgd(X.reshape(-1, 1), y_synt)
     final_pred = nn.predict(X.reshape(-1, 1))
     
     fig = go.Figure()
@@ -82,5 +91,6 @@ if __name__=="__main__":
     fig.show()
 
     print(f"K: {nn.weights[1].item():.3f}")
+
     print(f"B: {nn.weights[0]:.3f}")
     print(f"MSE: {nn.loss(final_pred, y_synt):.3f}")
